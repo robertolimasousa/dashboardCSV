@@ -39,7 +39,7 @@ def exibir_indicadores_operacionais(df):
         k3.metric("Tempo médio total", f"{tempo_total.mean():.1f} min")
 
     # ============================
-    # Comparativo dos tempos
+    # Comparativo dos tempos em gráfico de barras
     # ============================
 
     comparativo = pd.DataFrame(
