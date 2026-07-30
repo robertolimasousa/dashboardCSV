@@ -23,20 +23,24 @@ def exibir_indicadores_operacionais(df):
 
     tempo_estimado, tempo_realizado, tempo_total = calcular_tempos(df)
 
-    # ============================
-    # KPIs
-    # ============================
+    # Função auxiliar para validar se a serie contem dados validos
+    def possui_dados(serie):
+        return serie is not None and not serie.dropna().empty
 
-    k1, k2, k3 = st.columns(3)
+    # Cria as colunas fixas
+    cols = st.columns(3)
 
-    if tempo_estimado is not None and not tempo_estimado.dropna().empty:
-        k1.metric("Tempo médio estimado", f"{tempo_estimado.mean():.1f} min")
+    # 1. Tempo Médio Estimado
+    if possui_dados(tempo_estimado):
+        cols[0].metric("Tempo médio estimado", f"{tempo_estimado.mean():.1f} min")
 
-    if tempo_realizado is not None and not tempo_realizado.dropna().empty:
-        k2.metric("Tempo médio realizado", f"{tempo_realizado.mean():.1f} min")
+    # 2. Tempo Médio Realizado
+    if possui_dados(tempo_realizado):
+        cols[1].metric("Tempo médio realizado", f"{tempo_realizado.mean():.1f} min")
 
-    if tempo_total is not None and not tempo_total.dropna().empty:
-        k3.metric("Tempo médio total", f"{tempo_total.mean():.1f} min")
+    # 3. Tempo Médio Total
+    if possui_dados(tempo_total):
+        cols[2].metric("Tempo médio total", f"{tempo_total.mean():.1f} min")
 
     # ============================
     # Comparativo dos tempos em gráfico de barras
