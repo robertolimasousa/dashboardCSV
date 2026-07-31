@@ -1,4 +1,3 @@
-﻿# coding: utf-8
 import streamlit as st
 
 from config import LOGO
@@ -23,45 +22,26 @@ def carregar_css():
 
     if css.exists():
         with open(css, encoding="utf-8") as f:
-            st.html(f"<style>{f.read()}</style>")
+            st.markdown(
+                f"<style>{f.read()}</style>",
+                unsafe_allow_html=True,
+            )
     else:
         st.warning("Arquivo CSS não encontrado em assets/style.css.")
 
 
-def exibir_cabecalho():
-    st.html(
-        """
-        <section class="hero">
-            <div>
-                <span class="eyebrow">ZERO48 • OPERAÇÕES</span>
-                <h1>Dashboard de entregas</h1>
-                <p>Acompanhe tempos, volume e desempenho da operação em um só lugar.</p>
-            </div>
-            <div class="hero-badge">Atualize o CSV para analisar</div>
-        </section>
-        """
-    )
-
-
 def main():
     carregar_css()
-    exibir_cabecalho()
+    if LOGO.exists():
+        st.image(str(LOGO), width=220)
 
-    st.sidebar.title("📦 Zero48")
-    st.sidebar.caption("Dashboard operacional")
-    st.sidebar.divider()
+    st.title("📊 Dashboard Operacional Zero48")
+    st.caption("Análise de Tempo de Entrega")
+    st.sidebar.title("📦 Zero48 Dashboard")
 
     arquivo = st.sidebar.file_uploader("Selecione um arquivo CSV", type=["csv"])
     if arquivo is None:
-        st.html(
-            """
-            <section class="empty-state">
-                <div class="empty-icon">↑</div>
-                <h2>Envie sua planilha para começar</h2>
-                <p>Use o campo na barra lateral para carregar um arquivo CSV de entregas.</p>
-            </section>
-            """
-        )
+        st.info("Selecione um arquivo CSV na barra lateral.")
         return
 
     with st.spinner("Carregando planilha..."):
@@ -106,7 +86,6 @@ def main():
     }
 
     colunas_encontradas = selecionar_colunas_por_categoria(df, categorias_colunas)
-
     if not colunas_encontradas:
         st.error(
             "Não foi possível identificar as colunas esperadas no CSV. Verifique os cabeçalhos e tente novamente."
@@ -114,11 +93,9 @@ def main():
         st.write("Colunas detectadas:", list(df.columns))
         return
 
-    # Base oficial dos cálculos: somente as colunas reconhecidas no CSV.
     df_graficos = df[colunas_encontradas].copy()
 
     st.success("✅ Planilha carregada com sucesso!")
-    st.caption(f"{len(df_graficos):,} registros • {len(df_graficos.columns)} colunas reconhecidas")
 
     exibir_metricas_dataframe(df_graficos)
     exibir_indicadores_operacionais(df_graficos)

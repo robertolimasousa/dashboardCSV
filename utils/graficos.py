@@ -2,18 +2,11 @@
 import plotly.express as px
 import streamlit as st
 
+from utils.tema import aplicar_tema_grafico
+
 
 def criar_grafico_coluna(df, coluna, tipo):
     serie = df[coluna]
-
-    if pd.api.types.is_object_dtype(serie) or pd.api.types.is_string_dtype(serie):
-        dados = serie.fillna("Sem informação").astype(str).value_counts().head(20)
-        return px.bar(
-            x=dados.index,
-            y=dados.values,
-            title=f"Distribuição de {coluna}",
-            labels={"x": coluna, "y": "Quantidade"},
-        )
 
     if tipo == "📈 Histograma":
         coluna_lower = coluna.strip().lower()
@@ -21,37 +14,64 @@ def criar_grafico_coluna(df, coluna, tipo):
             "data",
             "hora",
             "data_hora",
-        } or pd.api.types.is_datetime64_any_dtype(df[coluna])
+        } or pd.api.types.is_datetime64_any_dtype(serie)
 
         if is_date_column and "data_hora" in df.columns:
             daily_counts = df.groupby(df["data_hora"].dt.date).size()
-            return px.bar(
+            return aplicar_tema_grafico(px.bar(
                 x=daily_counts.index,
                 y=daily_counts.values,
                 title="Quantidade de entregas por dia",
                 labels={"x": "Dia", "y": "Quantidade de entregas"},
-            )
+            ))
         if is_date_column:
-            daily_counts = (
-                pd.to_datetime(df[coluna], errors="coerce")
-                .dt.date.value_counts()
-                .sort_index()
-            )
-            return px.bar(
+            daily_counts = pd.to_datetime(serie, errors="coerce").dt.date.value_counts().sort_index()
+            return aplicar_tema_grafico(px.bar(
                 x=daily_counts.index,
                 y=daily_counts.values,
                 title="Quantidade de entregas por dia",
                 labels={"x": "Dia", "y": "Quantidade de entregas"},
-            )
-        return px.histogram(df, x=coluna, nbins=30, title=f"Distribuição de {coluna}")
+            ))
+
+        texto = serie.astype(str).str.strip().str.replace(",", ".", regex=False)
+        numeros = pd.to_numeric(texto.str.extract(r"(\d+\.?\d*)")[0], errors="coerce")
+        duracoes = pd.to_timedelta(
+            texto.where(texto.str.contains(":", na=False)), errors="coerce"
+        ).dt.total_seconds() / 60
+        valores = duracoes.fillna(numeros).dropna()
+
+        if not valores.empty:
+            return aplicar_tema_grafico(px.histogram(
+                x=valores,
+                nbins=min(20, max(5, int(valores.nunique() ** 0.5) * 2)),
+                title=f"Distribuição de {coluna}",
+                labels={"x": coluna, "y": "Quantidade de registros"},
+            ))
+
+        dados = serie.fillna("Sem informação").astype(str).value_counts().head(15)
+        return aplicar_tema_grafico(px.bar(
+            x=dados.index,
+            y=dados.values,
+            title=f"Distribuição por categoria de {coluna}",
+            labels={"x": coluna, "y": "Quantidade"},
+        ))
+
+    if pd.api.types.is_object_dtype(serie) or pd.api.types.is_string_dtype(serie):
+        dados = serie.fillna("Sem informação").astype(str).value_counts().head(20)
+        return aplicar_tema_grafico(px.bar(
+            x=dados.index,
+            y=dados.values,
+            title=f"Distribuição de {coluna}",
+            labels={"x": coluna, "y": "Quantidade"},
+        ))
 
     dados = df[coluna].value_counts().sort_index()
-    return px.bar(
+    return aplicar_tema_grafico(px.bar(
         x=dados.index,
         y=dados.values,
         title=f"Distribuição de {coluna}",
         labels={"x": coluna, "y": "Quantidade"},
-    )
+    ))
 
 
 def exibir_estatisticas(df, coluna):
@@ -116,17 +136,17 @@ def exibir_analise_interativa(df):
     tipo = st.radio("Tipo de gráfico:", ["📊 Barras", "📈 Histograma"], horizontal=True)
 
     fig = criar_grafico_coluna(df, coluna, tipo)
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch", theme=None)
 
     if selected_estimate is not None and "data_hora" in df.columns:
         st.markdown("---")
         st.subheader("📅 Análise Temporal de Estimativa")
-        temporal_fig = px.line(
+        temporal_fig = aplicar_tema_grafico(px.line(
             df,
             x="data_hora",
             y=selected_estimate,
             title=f"Evolução de {selected_estimate} ao longo do tempo",
-        )
-        st.plotly_chart(temporal_fig, use_container_width=True)
+        ))
+        st.plotly_chart(temporal_fig, width="stretch", theme=None)
 
     exibir_estatisticas(df, coluna)

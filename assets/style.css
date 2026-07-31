@@ -1,0 +1,37 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root { --navy: #03050c; --blue: #00d9ff; --blue-dark: #2878ff; --slate: #91aeca; --surface: #070b14; --line: #1e3a5f; }
+.stApp { background: #03050c; color: #d9f8ff; font-family: 'Inter', Arial, sans-serif; }
+.block-container { max-width: 1280px; padding: 2rem 2rem 3rem; }
+
+section[data-testid="stSidebar"] { background: #070b14; border-right: 1px solid #1e3a5f; }
+section[data-testid="stSidebar"] * { color: #d9f8ff; }
+section[data-testid="stSidebar"] [data-testid="stCaptionContainer"] p { color: #6e91b7; }
+section[data-testid="stSidebar"] hr { border-color: #1e3a5f; }
+
+.hero { align-items: center; background: linear-gradient(120deg, #070b14, #102850); border: 1px solid #1d5da8; border-radius: 24px; box-shadow: 0 0 32px rgba(0,217,255,.12), 0 16px 36px rgba(0,0,0,.42); box-sizing: border-box; color: #fff; display: flex; gap: 24px; justify-content: space-between; margin: 0 0 28px; overflow: hidden; padding: 32px 36px; position: relative; }
+.hero::after { background: #00d9ff; border-radius: 999px; content: ''; height: 190px; opacity: .16; position: absolute; right: -46px; top: -78px; width: 190px; }
+.hero h1 { color: #e6fbff; font-size: clamp(1.65rem,3vw,2.35rem); letter-spacing: -.04em; margin: 6px 0; }
+.hero p { color: #a8c8e7; margin: 0; }
+.eyebrow { color: #00d9ff; font-size: .72rem; font-weight: 800; letter-spacing: .12em; }
+.hero-badge { background: rgba(0,217,255,.1); border: 1px solid #1d5da8; border-radius: 999px; color: #c4f6ff; font-size: .8rem; font-weight: 600; padding: 10px 14px; white-space: nowrap; z-index: 1; }
+
+.empty-state { background: var(--surface); border: 1px dashed #1d5da8; border-radius: 20px; margin-top: 16px; padding: 56px 28px; text-align: center; }
+.empty-state h2 { color: #d9f8ff; margin: 12px 0 6px; }
+.empty-state p { color: var(--slate); margin: 0; }
+.empty-icon { align-items: center; background: #102850; border-radius: 999px; color: var(--blue); display: inline-flex; font-size: 1.7rem; font-weight: 800; height: 54px; justify-content: center; width: 54px; }
+
+div[data-testid="metric-container"], div[data-testid="stPlotlyChart"], div[data-testid="stDataFrame"] { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; box-shadow: 0 8px 24px rgba(15,23,42,.06); }
+div[data-testid="metric-container"] { padding: 18px; }
+div[data-testid="metric-container"] label { color: var(--slate); font-size: .84rem; font-weight: 600; }
+div[data-testid="metric-container"] [data-testid="stMetricValue"] { color: #d9f8ff; }
+div[data-testid="stPlotlyChart"] { margin: 10px 0 24px; padding: 8px; }
+div[data-testid="stDataFrame"] { overflow: hidden; }
+
+h2, h3 { color: #d9f8ff; letter-spacing: -.02em; }
+hr { border: 0; border-top: 1px solid var(--line); margin: 1.8rem 0; }
+section[data-testid="stFileUploader"] { background: rgba(255,255,255,.08); border: 1px solid #334155; border-radius: 14px; padding: 12px; }
+section[data-testid="stFileUploader"] button, .stButton > button { background: var(--blue); border: 0; border-radius: 10px; color: #fff; font-weight: 700; }
+section[data-testid="stFileUploader"] button:hover, .stButton > button:hover { background: var(--blue-dark); color: #fff; }
+
+@media (max-width: 640px) { .block-container { padding: 1rem; } .hero { align-items: flex-start; flex-direction: column; padding: 26px; } }
